@@ -173,7 +173,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 4
+  orthographic size: 30
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -197,7 +197,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 10, y: -40.2, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -228,7 +228,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 595600655}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.62, y: -3.78, z: 0}
+  m_LocalPosition: {x: -14, y: -13.9, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -249,11 +249,13 @@ MonoBehaviour:
   tamanioY: 50
   tamanioX: 50
   radioVecino: 1
-  probabilidades_de_ser_suelo_inicial: 0.4
-  seed: 40
-  reglaDeGeneracion: 4567/345
-  interaciones: 1
-  iteracionesIniciales: 0
+  probabilidades_de_ser_suelo_inicial: 0.45
+  seed: 1
+  useRandomSeed: 1
+  reglaDeGeneracion: 5678/35678
+  suavizarMundo: 1
+  interaciones: 15
+  iteracionesIniciales: 1
   sprites:
   - {fileID: 4612977724261351637, guid: b4d586aaa008f864886c5694b065d2b2, type: 3}
   - {fileID: 2730276325531221856, guid: 43eaddb157db642438356c3040c58211, type: 3}

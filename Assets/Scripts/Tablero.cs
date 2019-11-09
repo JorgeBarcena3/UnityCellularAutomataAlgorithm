@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+
+
 /// <summary>
 /// Clase tablero del juego
 /// </summary>
@@ -28,24 +28,26 @@ public class Tablero
     public int radioVecino { get; set; }
 
     /// <summary>
-    /// Radio por el que se calcularan los vecinos
-    /// </summary>
-    public string ruleGeneration { get; private set; }
-
-    /// <summary>
-    /// Reglas para las celulas vivas
-    /// </summary>
-    List<int> survive_rules { get; set; }
-
-    /// <summary>
-    /// Reglas para las celulas que deben nacer
-    /// </summary>
-    List<int> born_rules { get; set; }
-
-    /// <summary>
     /// Probabilidades de empezar vivo
     /// </summary>
     private float chanceToLive { get; set; }
+
+    /// <summary>
+    /// Manager que controla la aplicacion de las reglas
+    /// </summary>
+    private RuleManager ruleManager { get; set; }
+
+    /// <summary>
+    /// Sobrecarga operador de []
+    /// </summary>
+    /// <param name="x">Valor de X</param>
+    /// <param name="y">Valor de Y</param>
+    /// <returns></returns>
+    public Cell this[int x, int y]
+    {
+        get { return this.world_cell[x, y]; }
+        private set { }
+    }
 
     /// <summary>
     /// Constructor para crear el tablero
@@ -54,14 +56,13 @@ public class Tablero
     /// <param name="tamanioY"></param>
     public Tablero(int tamanioX, int tamanioY, int _radioVecino, string _reglaDeGeneracion, float probabilidades_de_ser_suelo_inicial)
     {
-        this.ruleGeneration = _reglaDeGeneracion;
+        this.ruleManager = new RuleManager(_reglaDeGeneracion, 'S', 'B');
         this.width = tamanioX;
         this.height = tamanioY;
         this.world_cell = new Cell[width, height];
         this.radioVecino = _radioVecino;
         this.chanceToLive = probabilidades_de_ser_suelo_inicial;
-        survive_rules = getRules('S'); //Las matamos
-        born_rules = getRules('B'); //Las crecemos
+
     }
 
     /// <summary>
@@ -69,11 +70,11 @@ public class Tablero
     /// </summary>
     public void createRandomWorld()
     {
-        for (int i = 0; i < this.world_cell.GetLength(0); i++)
+        for (int y = 0; y < this.world_cell.GetLength(0); ++y)
         {
-            for (int j = 0; j < this.world_cell.GetLength(1); j++)
+            for (int x = 0; x < this.world_cell.GetLength(1); ++x)
             {
-                this.world_cell[i, j] = new Cell(this, i, j, chanceToLive);
+                this.world_cell[x,y] = new Cell(x,y, chanceToLive);
             }
         }
 
@@ -87,14 +88,46 @@ public class Tablero
     private void searchNeighbors()
     {
 
-
-        for (int i = 0; i < this.world_cell.GetLength(0); i++)
+        for (int y = 0; y < this.world_cell.GetLength(0); ++y)
         {
-            for (int j = 0; j < this.world_cell.GetLength(1); j++)
+            for (int x = 0; x < this.world_cell.GetLength(1); ++x)
             {
-                this.world_cell[i, j].setNeighbors();
+                setNeighbors(ref this.world_cell[x,y]);
             }
         }
+    }
+
+    /// <summary>
+    /// Computa los vecinos de una celda
+    /// </summary>
+    /// <param name="myCell">La celda base</param>
+    private void setNeighbors(ref Cell myCell)
+    {
+        int radioVecinos = radioVecino;
+
+        myCell.countNeighborsAlive = 0;
+
+        //Cogemos todos los vecinos
+        for (int y = radioVecinos; y >= -radioVecinos; --y)
+        {
+            for (int x = radioVecinos; x >= -radioVecinos; --x)
+            {
+                int NeighborX = myCell.cellInfo.x + x;
+                int NeighborY = myCell.cellInfo.y + y;
+
+                if (
+                    (NeighborX >= 0 && NeighborX < world_cell.GetLength(0))
+                 && (NeighborY >= 0 && NeighborY < world_cell.GetLength(1))
+                 && (Math.Abs(x) + Math.Abs(y) != 0)
+                 )
+                {
+                    if (this.world_cell[NeighborX, NeighborY].value == CellsType.alive)
+                        ++myCell.countNeighborsAlive;
+
+                }
+            }
+        }
+
     }
 
     /// <summary>
@@ -105,100 +138,65 @@ public class Tablero
 
         Cell[,] next = new Cell[width, height];
 
-        for (int i = 0; i < this.world_cell.GetLength(0); i++)
+        for (int y = 0; y < this.world_cell.GetLength(0); ++y)
         {
-            for (int j = 0; j < this.world_cell.GetLength(1); j++)
+            for (int x = 0; x < this.world_cell.GetLength(1); ++x)
             {
-                Cell cell = this.world_cell[i, j];
-                next[i, j] = applyRules(survive_rules, born_rules, cell);
+                Cell cell = new Cell(this.world_cell[x,y]);
+                next[x,y] = this.ruleManager.applyRules(cell);
 
             }
         }
 
-        this.world_cell = next;
-
+        copyNewBoard(next);
         searchNeighbors();
 
     }
 
     /// <summary>
-    /// Aplicamos las reglas de supervivencia
+    /// Copia un nuevo array a la variable existente
     /// </summary>
-    /// <param name="survive_rules">Reglas de supervivencia (Muerte)</param>
-    /// <param name="born_rules">Reglas de supervivencia (Vida)</param>
-    /// <param name="cell">Celda actual</param>
-    /// <returns></returns>
-    private Cell applyRules(List<int> survive_rules, List<int> born_rules, Cell cell)
+    /// <param name="next">New Array</param>
+    private void copyNewBoard(Cell[,] next)
     {
-        Cell next_cell = cell;
 
-        if (cell.value == CellsType.dead)
+        for (int y = 0; y < this.world_cell.GetLength(0); ++y)
         {
-            if (born_rules.Contains(cell.countNeighborsAlive))
+            for (int x = 0; x < this.world_cell.GetLength(1); ++x)
             {
-                next_cell = new Cell(this, cell.cellInfo.x, cell.cellInfo.y, CellsType.alive);
+                this.world_cell[ x,y] = new Cell(next[x, y]);
 
             }
         }
-        else if (cell.value == CellsType.alive)
-        {
-            if (survive_rules.Contains(cell.countNeighborsAlive))
-            {
-                next_cell = new Cell(this, cell.cellInfo.x, cell.cellInfo.y, CellsType.alive);
-            }
-            else
-            {
-                next_cell = new Cell(this, cell.cellInfo.x, cell.cellInfo.y, CellsType.dead);
-            }
-
-        }
-
-
-        return next_cell;
     }
 
     /// <summary>
-    /// Obtenemos las reglas segun determinemos en los parametros
+    /// Suaviza el mapa algunos puntos en el centro
     /// </summary>
-    /// <param name="index">Prefijo de cada zona</param>
-    /// <param name="separator">Separador de reglas</param>
-    /// <returns></returns>
-    private List<int> getRules(char index, char separator = '/')
+    public void smoothOutTheMap()
     {
-        List<string> rules = this.ruleGeneration.Split(separator).OfType<string>().ToList();
+        searchNeighbors();
 
-        string surviveRules = rules.Where(m => m.Contains(index)).FirstOrDefault();
+        Cell[,] next = new Cell[width, height];
 
-        if (surviveRules == null)
+        for (int y = 0; y < this.world_cell.GetLength(0); ++y)
         {
-            if (index == 'B')
+            for (int x = 0; x < this.world_cell.GetLength(1); ++x)
             {
-                surviveRules = rules[1];
-            }
-            else
-            {
-                surviveRules = rules[0];
+                Cell cell = new Cell(this.world_cell[x,y]);
+                if (this.world_cell[x,y].countNeighborsAlive == 8 && this.world_cell[x, y].value == CellsType.dead)
+                    cell = new Cell(cell.cellInfo.x, cell.cellInfo.y, CellsType.alive);
+                else if(this.world_cell[x, y].countNeighborsAlive == 0 && this.world_cell[x, y].value == CellsType.alive)
+                    cell = new Cell(cell.cellInfo.x, cell.cellInfo.y, CellsType.dead);
+
+
+                next[x,y] = cell;
 
             }
         }
 
-        List<int> surviveRulesList = new List<int>();
+        copyNewBoard(next);
+        searchNeighbors();
 
-        if (surviveRules != null)
-        {
-            for (int i = 0; i < surviveRules.Length; ++i)
-            {
-                if ((surviveRules[i] != index))
-                {
-                    surviveRulesList.Add(int.Parse(surviveRules[i].ToString()));
-                }
-            }
-
-        }
-
-
-        return surviveRulesList;
     }
-
-
 }

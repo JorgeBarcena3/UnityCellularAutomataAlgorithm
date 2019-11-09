@@ -1,10 +1,15 @@
-﻿public class CellInfo
-{
-    /// <summary>
-    /// Tablero al que pertenece
-    /// </summary>
-    public Tablero world;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
+/// <summary>
+/// Informacion de cada celda
+/// </summary>
+public class CellInfo
+{
+ 
     /// <summary>
     /// Posicion X que ocupa
     /// </summary>
@@ -15,21 +20,15 @@
     /// </summary>
     public int y;
 
-    /// <summary>
-    /// Casilla a la que pertenece
-    /// </summary>
-    public Cell cell { get { return world.world_cell[x, y]; } }
 
     /// <summary>
     /// Constructor que almacena la info de la casilla
     /// </summary>
-    /// <param name="world">Tamblero</param>
-    /// <param name="x">Posicion X</param>
-    /// <param name="y">Posicion Y</param>
-    public CellInfo(Tablero _world, int x, int y)
+    /// <param name="_x">Posicion X</param>
+    /// <param name="_y">Posicion Y</param>
+    public CellInfo(int _x, int _y)
     {
-        this.world = _world;
-        this.x = x;
-        this.y = y;
+        this.x = _x;
+        this.y = _y;
     }
 }

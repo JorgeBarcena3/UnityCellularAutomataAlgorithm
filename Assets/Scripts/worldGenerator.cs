@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class worldGenerator : MonoBehaviour
@@ -9,52 +8,68 @@ public class worldGenerator : MonoBehaviour
     /// <summary>
     /// Tamaño Y de la cueva
     /// </summary>
-    public int tamanioY;
+    public int tamanioY = 50;
 
     /// <summary>
     /// Tamaño X de la cueva
     /// </summary>
-    public int tamanioX;
+    public int tamanioX = 50;
 
     /// <summary>
     /// Radio por el que se calcularan las casillas vecinas
     /// </summary>
-    public int radioVecino;
+    public int radioVecino = 1;
 
+    [Range(0, 1)]
     /// <summary>
     /// Probabilidades de que sea suelo inicial
     /// </summary>
-    public float probabilidades_de_ser_suelo_inicial = 0.5f;
+    public float probabilidades_de_ser_suelo_inicial = 0.45f;
+
+    [Header("Semilla del mundo")]
 
     /// <summary>
     /// Semilla de generacion aleatoria
     /// </summary>
     public int seed;
 
+    /// <summary>
+    /// Determinamos si cogemos una seed al azar
+    /// </summary>
+    public bool useRandomSeed;
+
     [Header("Regla de generacion de mundo (Cells Atomata - B/S)")]
 
     /// <summary>
     /// Regla para la generacion del mundo
     /// </summary>
-    public string reglaDeGeneracion = "4567/345";
+    public string reglaDeGeneracion = "5678/35678";
+
+    /// <summary>
+    /// Determina si suavizamos o no el mundo
+    /// </summary>
+    public bool suavizarMundo = true;
 
     [Header("Iteraciones para la creacion del mundo")]
 
     /// <summary>
     /// Numero de iteraciones del mapa
     /// </summary>
-    public int interaciones;
+    public int interaciones = 15;
 
     /// <summary>
     /// Se daran iteracciones iniciales o no
     /// </summary>
-    public bool iteracionesIniciales;
+    public bool iteracionesIniciales = true;
 
     /// <summary>
     /// Representacion del mundo generado
     /// </summary>
     private Tablero board;
 
+    /// <summary>
+    /// Genera un mapa aleatorio
+    /// </summary>
     void generateWorld()
     {
         //Creamos la matriz de las celdas
@@ -66,7 +81,6 @@ public class worldGenerator : MonoBehaviour
         if (iteracionesIniciales)
             refreshBoard();
 
-        //Dibujamos el mundo
         drawBoard();
 
     }
@@ -98,23 +112,30 @@ public class worldGenerator : MonoBehaviour
 
         }
 
-        for (int i = 0; i < this.board.world_cell.GetLength(0); i++)
+        for (int y = 0; y < this.board.world_cell.GetLength(0); y++)
         {
-            for (int j = 0; j < this.board.world_cell.GetLength(1); j++)
+            for (int x = 0; x < this.board.world_cell.GetLength(1); x++)
             {
                 Vector3 size = sprites[0].GetComponent<SpriteRenderer>().bounds.size;
+                Vector3 position = this.transform.position + new Vector3(x * size.x, -(y * size.y), 0);
 
-                Vector3 position = this.transform.position + new Vector3(i * size.x / 2, j * size.y / 2, 0);
-
-                if (this.board.world_cell[i, j].value == CellsType.dead)
+                if (this.board.world_cell[x, y].value == CellsType.dead)
                 {
-                    spritesBoard.Add(Instantiate(sprites[0], position, Quaternion.identity));
+                    spritesBoard.Add(Instantiate(sprites[0], position, Quaternion.identity, this.transform));
                 }
                 else
                 {
-                    spritesBoard.Add(Instantiate(sprites[1], position, Quaternion.identity));
+                    spritesBoard.Add(Instantiate(sprites[1], position, Quaternion.identity, this.transform));
 
                 }
+
+                if (
+                       this.board.world_cell[x, y].countNeighborsAlive == 8 && this.board[x, y].value == CellsType.dead
+                    || this.board[x, y].countNeighborsAlive == 0 && this.board[x, y].value == CellsType.alive)
+
+                    spritesBoard.Last().GetComponent<SpriteRenderer>().color = Color.red;
+
+
 
             }
         }
@@ -123,7 +144,9 @@ public class worldGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        UnityEngine.Random.InitState(seed);
+        if (!useRandomSeed)
+            UnityEngine.Random.InitState(seed);
+
         generateWorld();
     }
 
@@ -131,9 +154,16 @@ public class worldGenerator : MonoBehaviour
     void Update()
     {
 
-        if (Input.GetKey(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             refreshBoard();
+        }
+
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            board.smoothOutTheMap();
+            drawBoard();
+
         }
     }
 
@@ -147,7 +177,11 @@ public class worldGenerator : MonoBehaviour
             this.board.computeNeighbors();
         }
 
-        Debug.Log("ITERACIONES TERMINADAS");
+        if (suavizarMundo)
+            this.board.smoothOutTheMap();
+
         drawBoard();
+
     }
+
 }
