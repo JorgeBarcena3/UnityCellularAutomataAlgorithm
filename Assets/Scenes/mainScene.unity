@@ -253,11 +253,11 @@ MonoBehaviour:
   generarPasillosPorIteracion: 1
   suavizarMundo: 0
   probabilidadesDeSerSueloRnd: 0.45
-  mostrarColoresDebug: 0
+  mostrarColoresDebug: 1
   colorDeSalasYPasillos: 1
   seed: 5
   useRandomSeed: 1
-  verProcesoCreacionMapa: 0
+  verProcesoCreacionMapa: 1
   reglaDeGeneracion: 5678/35678
   interaciones: 15
   iteracionesIniciales: 1
