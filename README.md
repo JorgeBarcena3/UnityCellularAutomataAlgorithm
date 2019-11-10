@@ -1,1 +1,3 @@
 # UnityCellularAutomataAlgorithm
+
+Componente de unity que genera un mapa en 2D, utilizando los algoritmos de "Cellular Automata". En el componente se pueden modificar parámetros como la regla por la que se crean los mundos, el número de iteraciones por cada generación...
