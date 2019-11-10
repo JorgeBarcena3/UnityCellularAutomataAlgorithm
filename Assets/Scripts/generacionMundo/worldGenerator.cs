@@ -20,11 +20,41 @@ public class worldGenerator : MonoBehaviour
     /// </summary>
     public int radioVecino = 1;
 
+    /// <summary>
+    /// Los pasillos seran estrechos o amplios
+    /// </summary>
+    public bool pasillosEstrechos = false;
+
+    /// <summary>
+    /// Determina si despues de cada iteracion se generan pasillos o no
+    /// </summary>
+    public bool generarPasillosPorIteracion = true;
+
+    /// <summary>
+    /// Determina si suavizamos o no el mundo
+    /// </summary>
+    public bool suavizarMundo = true;
+
+
+
     [Range(0, 1)]
     /// <summary>
     /// Probabilidades de que sea suelo inicial
     /// </summary>
-    public float probabilidades_de_ser_suelo_inicial = 0.45f;
+    public float probabilidadesDeSerSueloRnd = 0.45f;
+
+    [Header("Opciones de debug")]
+
+    /// <summary>
+    ///  Determina si se mostraran los colores del modo debug
+    /// </summary>
+    public bool mostrarColoresDebug = false;
+
+    /// <summary>
+    ///  Determina si se mostraran los colores de cada sala
+    /// </summary>
+    public bool colorDeSalasYPasillos = false;
+
 
     [Header("Semilla del mundo")]
 
@@ -38,6 +68,16 @@ public class worldGenerator : MonoBehaviour
     /// </summary>
     public bool useRandomSeed;
 
+    /// <summary>
+    /// Ver progreso de creacion de mapa
+    /// </summary>
+    public bool verProcesoCreacionMapa = false;
+
+    /// <summary>
+    /// Numero de iteraciones que ha hecho en la primera generacion del mapa
+    /// </summary>
+    private int countIteracionesIniciales = 0;
+
     [Header("Regla de generacion de mundo (Cells Atomata - B/S)")]
 
     /// <summary>
@@ -45,10 +85,6 @@ public class worldGenerator : MonoBehaviour
     /// </summary>
     public string reglaDeGeneracion = "5678/35678";
 
-    /// <summary>
-    /// Determina si suavizamos o no el mundo
-    /// </summary>
-    public bool suavizarMundo = true;
 
     [Header("Iteraciones para la creacion del mundo")]
 
@@ -73,12 +109,12 @@ public class worldGenerator : MonoBehaviour
     void generateWorld()
     {
         //Creamos la matriz de las celdas
-        this.board = new Tablero(tamanioX, tamanioY, radioVecino, reglaDeGeneracion, probabilidades_de_ser_suelo_inicial);
+        this.board = new Tablero(tamanioX, tamanioY, radioVecino, reglaDeGeneracion, probabilidadesDeSerSueloRnd, pasillosEstrechos);
 
         //Creamos un tablero random
         this.board.createRandomWorld();
 
-        if (iteracionesIniciales)
+        if (iteracionesIniciales && !verProcesoCreacionMapa)
             refreshBoard();
 
         drawBoard();
@@ -129,11 +165,25 @@ public class worldGenerator : MonoBehaviour
 
                 }
 
-                if (
-                       this.board.world_cell[x, y].countNeighborsAlive == 8 && this.board[x, y].value == CellsType.dead
-                    || this.board[x, y].countNeighborsAlive == 0 && this.board[x, y].value == CellsType.alive)
+                if (!mostrarColoresDebug)
+                {
+                    if (this.board[x, y].value == CellsType.alive)
+                    {
+                        spritesBoard.Last().GetComponent<SpriteRenderer>().color = Color.white;
+                    }
+                    else
+                    {
+                        spritesBoard.Last().GetComponent<SpriteRenderer>().color = Color.black;
+                    }
+                }
+                else if (colorDeSalasYPasillos)
+                {
+                    if (this.board[x, y].value == CellsType.alive)
+                    {
+                        spritesBoard.Last().GetComponent<SpriteRenderer>().color = this.board[x, y].color;
 
-                    spritesBoard.Last().GetComponent<SpriteRenderer>().color = Color.red;
+                    }
+                }
 
 
 
@@ -146,6 +196,10 @@ public class worldGenerator : MonoBehaviour
     {
         if (!useRandomSeed)
             UnityEngine.Random.InitState(seed);
+
+        if (verProcesoCreacionMapa)
+            InvokeRepeating("doAStep", 0.0f, 0.5f);
+
 
         generateWorld();
     }
@@ -165,6 +219,38 @@ public class worldGenerator : MonoBehaviour
             drawBoard();
 
         }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            board.roomManager.checkRooms(board);
+            drawBoard();
+
+        }
+
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            board.roomManager.checkRooms(board, true);
+            drawBoard();
+        }
+    }
+
+    /// <summary>
+    /// Hace una genracion del algoritmo
+    /// </summary>
+    public void doAStep()
+    {
+        this.board.computeNeighbors();
+        board.roomManager.checkRooms(board);
+        if (++countIteracionesIniciales >= interaciones)
+        {
+            board.roomManager.checkRooms(board, this.generarPasillosPorIteracion);
+            if (suavizarMundo)
+                board.smoothOutTheMap();
+
+            CancelInvoke("doAStep");
+        }
+        drawBoard();
+
     }
 
     /// <summary>
@@ -179,6 +265,12 @@ public class worldGenerator : MonoBehaviour
 
         if (suavizarMundo)
             this.board.smoothOutTheMap();
+
+        if (generarPasillosPorIteracion)
+            board.roomManager.checkRooms(board, true);
+        else
+            board.roomManager.checkRooms(board);
+
 
         drawBoard();
 

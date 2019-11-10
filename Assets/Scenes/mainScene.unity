@@ -243,17 +243,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 595600655}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb53325604a22e343b88704b41a0f138, type: 3}
+  m_Script: {fileID: 11500000, guid: 3af96a43cb6e61846aab14cbfb3996b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   tamanioY: 50
   tamanioX: 50
   radioVecino: 1
-  probabilidades_de_ser_suelo_inicial: 0.45
-  seed: 1
+  pasillosEstrechos: 0
+  generarPasillosPorIteracion: 1
+  suavizarMundo: 0
+  probabilidadesDeSerSueloRnd: 0.45
+  mostrarColoresDebug: 0
+  colorDeSalasYPasillos: 1
+  seed: 5
   useRandomSeed: 1
+  verProcesoCreacionMapa: 0
   reglaDeGeneracion: 5678/35678
-  suavizarMundo: 1
   interaciones: 15
   iteracionesIniciales: 1
   sprites:

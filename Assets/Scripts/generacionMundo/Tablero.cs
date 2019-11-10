@@ -38,6 +38,11 @@ public class Tablero
     private RuleManager ruleManager { get; set; }
 
     /// <summary>
+    /// Encargado de una vez generado el mapa, determinar las salas que lo contienen
+    /// </summary>
+    public roomsManager roomManager { get; private set; }
+
+    /// <summary>
     /// Sobrecarga operador de []
     /// </summary>
     /// <param name="x">Valor de X</param>
@@ -54,7 +59,7 @@ public class Tablero
     /// </summary>
     /// <param name="tamanioX"></param>
     /// <param name="tamanioY"></param>
-    public Tablero(int tamanioX, int tamanioY, int _radioVecino, string _reglaDeGeneracion, float probabilidades_de_ser_suelo_inicial)
+    public Tablero(int tamanioX, int tamanioY, int _radioVecino, string _reglaDeGeneracion, float probabilidades_de_ser_suelo_inicial, bool pasillosEstrechos)
     {
         this.ruleManager = new RuleManager(_reglaDeGeneracion, 'S', 'B');
         this.width = tamanioX;
@@ -62,7 +67,7 @@ public class Tablero
         this.world_cell = new Cell[width, height];
         this.radioVecino = _radioVecino;
         this.chanceToLive = probabilidades_de_ser_suelo_inicial;
-
+        this.roomManager = new roomsManager(this, pasillosEstrechos);
     }
 
     /// <summary>
@@ -150,6 +155,7 @@ public class Tablero
 
         copyNewBoard(next);
         searchNeighbors();
+        this.roomManager.checkRooms(this);
 
     }
 

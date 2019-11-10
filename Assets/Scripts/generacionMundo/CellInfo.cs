@@ -20,6 +20,11 @@ public class CellInfo
     /// </summary>
     public int y;
 
+    /// <summary>
+    /// Determina si una celda esta en una habitacion o no
+    /// </summary>
+    public bool isInRoom = false;
+
 
     /// <summary>
     /// Constructor que almacena la info de la casilla
@@ -30,5 +35,6 @@ public class CellInfo
     {
         this.x = _x;
         this.y = _y;
+        this.isInRoom = false;
     }
 }

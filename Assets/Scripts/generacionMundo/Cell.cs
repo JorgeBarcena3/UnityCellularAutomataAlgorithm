@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 /// <summary>
 /// Tipos de celda que puede haber en nuestro mapa
@@ -12,7 +14,7 @@ public enum CellsType
 /// <summary>
 /// Celda de juego
 /// </summary>
-public class Cell 
+public class Cell
 {
 
     /// <summary>
@@ -85,6 +87,77 @@ public class Cell
         this.color = this.value == CellsType.dead ? Color.black : Color.white;
 
 
+    }
+
+    /// <summary>
+    /// Devuelve los vecinos que son walkables
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public List<Cell> getVecinosWalkables(Tablero board)
+    {
+        int radioVecinos = board.radioVecino;
+
+        List<Cell> celdasWalkables = new List<Cell>();
+
+        //Cogemos todos los vecinos
+        for (int y = radioVecinos; y >= -radioVecinos; --y)
+        {
+            for (int x = radioVecinos; x >= -radioVecinos; --x)
+            {
+                int NeighborX = cellInfo.x + x;
+                int NeighborY = cellInfo.y + y;
+
+                if (
+                    (NeighborX >= 0 && NeighborX < board.world_cell.GetLength(0))
+                 && (NeighborY >= 0 && NeighborY < board.world_cell.GetLength(1))
+                 && (Math.Abs(x) + Math.Abs(y) != 0)
+                 && (NeighborX == cellInfo.x || NeighborY == cellInfo.y)
+                 )
+                {
+
+                    celdasWalkables.Add(board[NeighborX, NeighborY]);
+
+                }
+            }
+        }
+
+        return celdasWalkables;
+    }
+
+    /// <summary>
+    /// Devuelve los vecinos que son walkables
+    /// </summary>
+    /// <param name="board"></param>
+    /// <returns></returns>
+    public List<Cell> getVecinos(Tablero board)
+    {
+        int radioVecinos = board.radioVecino;
+
+        List<Cell> celdasWalkables = new List<Cell>();
+
+        //Cogemos todos los vecinos
+        for (int y = radioVecinos; y >= -radioVecinos; --y)
+        {
+            for (int x = radioVecinos; x >= -radioVecinos; --x)
+            {
+                int NeighborX = cellInfo.x + x;
+                int NeighborY = cellInfo.y + y;
+
+                if (
+                    (NeighborX >= 0 && NeighborX < board.world_cell.GetLength(0))
+                 && (NeighborY >= 0 && NeighborY < board.world_cell.GetLength(1))
+                 && (Math.Abs(x) + Math.Abs(y) != 0)
+                 )
+                {
+
+                    celdasWalkables.Add(board[NeighborX, NeighborY]);
+
+                }
+            }
+        }
+
+        return celdasWalkables;
     }
 
 
