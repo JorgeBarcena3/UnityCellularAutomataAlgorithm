@@ -9,9 +9,10 @@ public enum TileWalkableType
 public class TileWalkable : Tile
 {
     public TileWalkableType tileType;
-    public TileWalkable(int x, int y) : base(x: x, y: y, walkable: true) { }
+    public TileWalkable(int x, int y) : base( walkable: true) { }
     public void Awake()
     {
+        walkable = true;
         tileRender.sprite = sprites[(int)tileType];
     }
 }

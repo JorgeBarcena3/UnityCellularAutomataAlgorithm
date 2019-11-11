@@ -5,24 +5,52 @@ using UnityEngine;
 public class Tile : MonoBehaviour
 {
     //Posicion x
-    public int x { get; private set; }
+    public float x { get; private set; }
     //Posicion y
-    public int y { get; private set; }
+    public float y { get; private set; }
     //Profundidaz 
-    public int z { get; private set; }
+    public float z { get; private set; }
     //Indica si esta baldosa es transitable
-    public bool walkable { get; private set; }
+    public bool walkable { get; set; }
     //Referencia al spriterender de la baldosa
+    [HideInInspector]
     public SpriteRenderer tileRender;
+    //Referencia al transform de la baldosa
+    [HideInInspector]
+    public Transform tileTransform;
     //array de posibles sprites
     public Sprite[] sprites;
-    public Tile(int x, int y, bool walkable = true)
+    public Tile(bool walkable = true)
     {
-        this.x = x;
-        this.y = y;
-        this.z = -(y);
         this.walkable = walkable;
+        
+
+    }
+    public void Start()
+    {
         tileRender = GetComponent<SpriteRenderer>();
+        tileTransform = GetComponent<Transform>();
+        x = tileTransform.position.x;
+        y = tileTransform.position.y;
+        z = tileTransform.position.z;
+        if (!walkable)
+            Elevate();
+
+    }
+    public Vector2 GetPosition()
+    {
+        return new Vector2(x, y);
+    }
+    public void SetPosition(Vector2 position)
+    {
+        x = position.x;
+        y = position.y;
+        tileTransform.position = position;
+    }
+    public void Elevate()
+    {
+        Vector3 size = GetComponent<SpriteRenderer>().bounds.size;
+        tileTransform.position = new Vector3(x, y + size.y * 9 / 40, z-1);
 
     }
 

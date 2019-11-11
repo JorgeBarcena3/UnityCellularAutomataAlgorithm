@@ -209,7 +209,8 @@ public class worldGenerator : MonoBehaviour
             for (int x = 0; x < this.board.world_cell.GetLength(1); x++)
             {
                 Vector3 size = sprites[0].GetComponent<SpriteRenderer>().bounds.size;
-                Vector3 position = this.transform.position + new Vector3(x * size.x, -(y * size.y), 0);
+                Vector3 position = y % 2 == 0 ? this.transform.position + new Vector3(x * size.x, -(y * size.y* 23 / 40), -(y)):
+                    this.transform.position + new Vector3(x * size.x + size.x/2, -(y * size.y * 23/40), -(y));
 
                 if (this.board.world_cell[x, y].value == CellsType.dead)
                 {
@@ -221,25 +222,7 @@ public class worldGenerator : MonoBehaviour
 
                 }
 
-                if (!mostrarColoresDebug)
-                {
-                    if (this.board[x, y].value == CellsType.alive)
-                    {
-                        spritesBoard.Last().GetComponent<SpriteRenderer>().color = Color.white;
-                    }
-                    else
-                    {
-                        spritesBoard.Last().GetComponent<SpriteRenderer>().color = Color.black;
-                    }
-                }
-                else if (colorDeSalasYPasillos)
-                {
-                    if (this.board[x, y].value == CellsType.alive)
-                    {
-                        spritesBoard.Last().GetComponent<SpriteRenderer>().color = this.board[x, y].color;
-
-                    }
-                }
+               
 
 
 

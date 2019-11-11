@@ -10,10 +10,12 @@ public class TileUnwalkable : Tile
 {
    
     public TileUnwalkableType tileType;
-    public TileUnwalkable(int x, int y) : base(x: x, y: y, walkable: false) { }
+    public TileUnwalkable(int x, int y) : base( walkable: false) {  }
 
     public void Awake()
     {
+        walkable = false;
         tileRender.sprite = sprites[(int)tileType];
     }
+   
 }

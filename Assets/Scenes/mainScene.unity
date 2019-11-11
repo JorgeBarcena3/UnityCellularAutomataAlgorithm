@@ -197,7 +197,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 10, y: -40.2, z: -10}
+  m_LocalPosition: {x: 10, y: -40.2, z: -100}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -253,8 +253,8 @@ MonoBehaviour:
   generarPasillosPorIteracion: 1
   suavizarMundo: 0
   probabilidadesDeSerSueloRnd: 0.45
-  mostrarColoresDebug: 1
-  colorDeSalasYPasillos: 1
+  mostrarColoresDebug: 0
+  colorDeSalasYPasillos: 0
   seed: 5
   useRandomSeed: 1
   verProcesoCreacionMapa: 1
@@ -262,5 +262,5 @@ MonoBehaviour:
   interaciones: 15
   iteracionesIniciales: 1
   sprites:
-  - {fileID: 4612977724261351637, guid: b4d586aaa008f864886c5694b065d2b2, type: 3}
-  - {fileID: 2730276325531221856, guid: 43eaddb157db642438356c3040c58211, type: 3}
+  - {fileID: 5829867425870531473, guid: 11862b2dbb70eef4ba627dd793a82e0b, type: 3}
+  - {fileID: 5548349493086585102, guid: 7e0574edf6c506445b78cf017bcf49a8, type: 3}
