@@ -136,7 +136,7 @@ public class worldGenerator : MonoBehaviour
     /// </summary>
     void drawBoard()
     {
-        /*
+        
         if (spritesBoard == null)
             spritesBoard = new List<GameObject>();
         else
@@ -190,7 +190,7 @@ public class worldGenerator : MonoBehaviour
 
             }
         }
-        */
+        /*
 
         if (spritesBoard == null)
             spritesBoard = new List<GameObject>();
@@ -222,12 +222,10 @@ public class worldGenerator : MonoBehaviour
 
                 }
 
-               
-
-
 
             }
         }
+        */
     }
 
     // Start is called before the first frame update

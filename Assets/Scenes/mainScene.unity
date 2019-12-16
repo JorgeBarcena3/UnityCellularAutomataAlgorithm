@@ -249,18 +249,18 @@ MonoBehaviour:
   tamanioY: 50
   tamanioX: 50
   radioVecino: 1
-  pasillosEstrechos: 0
+  pasillosEstrechos: 1
   generarPasillosPorIteracion: 1
-  suavizarMundo: 0
+  suavizarMundo: 1
   probabilidadesDeSerSueloRnd: 0.45
-  mostrarColoresDebug: 0
-  colorDeSalasYPasillos: 0
+  mostrarColoresDebug: 1
+  colorDeSalasYPasillos: 1
   seed: 5
   useRandomSeed: 1
-  verProcesoCreacionMapa: 1
+  verProcesoCreacionMapa: 0
   reglaDeGeneracion: 5678/35678
   interaciones: 15
   iteracionesIniciales: 1
   sprites:
-  - {fileID: 5829867425870531473, guid: 11862b2dbb70eef4ba627dd793a82e0b, type: 3}
-  - {fileID: 5548349493086585102, guid: 7e0574edf6c506445b78cf017bcf49a8, type: 3}
+  - {fileID: 4612977724261351637, guid: b4d586aaa008f864886c5694b065d2b2, type: 3}
+  - {fileID: 2730276325531221856, guid: 43eaddb157db642438356c3040c58211, type: 3}
